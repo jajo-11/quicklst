@@ -600,27 +600,6 @@ def _hist2d_time_of_interest(block: ListFileBlock, x: uint16, y: uint16, adc1: u
 
   return hist
 
-
-# shifts values in histogram of the flash ebit mcp to correct for non-linearities
-@njit
-def _apply_correction(hist, distortion_map):
-  """
-  shifts values of histogram according to distortion_map to correct for non-linearities in the detector of the flash ebit
-  """
-  assert (hist.shape[0] == distortion_map.shape[0])
-  assert (hist.shape[1] == distortion_map.shape[1])
-
-  corrected_hist = np.zeros(hist.shape, dtype=np.int64)
-
-  for i in range(hist.shape[0]):
-    for j in range(hist.shape[1]):
-      new_j = j + distortion_map[i, j]
-      if 0 <= new_j < hist.shape[1]:
-        corrected_hist[i, new_j] += hist[i, j]
-
-  return corrected_hist
-
-
 @njit
 def down_bin(hist, factor=8):
   """
